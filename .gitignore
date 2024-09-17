@@ -1,1 +1,4 @@
-build/** 
+build/**.obj
+build/rrtmg_sw**
+build/makefile
+run_examples_std_atm/rrtmg_sw*
