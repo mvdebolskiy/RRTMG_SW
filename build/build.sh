@@ -6,19 +6,31 @@
 platform=$1
 kgsrc=$2
 version=v5.00
-declare -a platforms=("aix_xlf90" "linux_mimi" "linux_pgi" "OS_X_g95" "OS_X_ibm_xl" "sgi" "sun")
+i=0
+declare -a platforms=()
+for file in ./makefiles/* ; do 
+  platforms[$i]=${file#"./makefiles/make_rrtmg_sw_"}
+  i=$((i+1))
+ done
+echo ${platforms[*]}
 if [[ ${platform} == "" ]] ; then
       echo "No platform selected."
       echo "Usage: $0 <platform> <kgsrc_format>"
       exit 1
 fi
-if ! [[ ${platforms[*]} =~ ${platform} ]] ; then
-      echo "$platform is not supported."
-      echo "Available platforms are:"
-      echo ${platforms[*]}
-      exit 1
+match=0
+for p in "${platforms[@]}" ; do
+  if [[ $p == ${platform} ]] ; then
+        match=1
+        break
+  fi
+done
+if [[ $match == 0 ]] ; then
+    echo "$platform is not supported."
+    echo "Available platforms are:"
+    echo ${platforms[*]}
+    exit 1
 fi
-
 if  [[ ${kgsrc} == "" ]]; then
       echo "no kgsrc_format selected"
       exit 1
@@ -44,6 +56,11 @@ make PLATFORM=${platform} KGSRC=${kgsrc}
 if [[ -f ./rrtmg_sw_${version}_${platform} ]] ; then
 
     cd  ../test/
+    ln -sf ../build/rrtmg_sw_${version}_${platform} rrtmg_sw
+    if [[ ${kgsrc} == "nc" ]] ; then
+        cp -f ../data/rrtmg_sw.nc ./
+    fi
+    cd  ../run_examples_std_atm/
     ln -sf ../build/rrtmg_sw_${version}_${platform} rrtmg_sw
     if [[ ${kgsrc} == "nc" ]] ; then
         cp -f ../data/rrtmg_sw.nc ./
