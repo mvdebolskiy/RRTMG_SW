@@ -43,14 +43,15 @@ make PLATFORM=${platform} KGSRC=${kgsrc}
 
 if [[ -f ./rrtmg_sw_${version}_${platform} ]] ; then
 
-    cd  ../run_examples_std_atm/
+    cd  ../test/
     ln -sf ../build/rrtmg_sw_${version}_${platform} rrtmg_sw
-
-    ./script.run_std_atm
     if [[ ${kgsrc} == "nc" ]] ; then
         cp -f ../data/rrtmg_sw.nc ./
     fi
+    echo "build complete"
+    echo "test the build by running ./test.sh"
 else
     echo "build was not complete"
+    exit 1
 fi
 
